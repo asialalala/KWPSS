@@ -51,12 +51,15 @@ Tzew0 = TzewN + 0;  % 0 - nominalne
 Tgz0 = TgzN + 0;    % 0 - nominalne
 Qg0 = QgN*1.0;      % 1.0 - nominalne
 Fmg0 = FmgN*1.0;    % 1.0 - nominalne
+Twz0 = TwzN + 0;    % 0 - nominalnie
 
 % stan równowagi        (dla nominalnych warubkowpoczatkowcyh Twew0 = TwewN i Tgp0 = TgpN)
 Twew0 = (Cpw*Fmg0*Kcg*Tgz0 + Kcw*(Kcg + Cpw*Fmg0)*Tzew0)/(Kcg*Kcw + Cpw*Fmg0*(Kcg + Kcw));
 Tgp0 = ((Kcg + Kcw)*Twew0 - Kcw*Tzew0)/(Kcg);
-Twp0 = TwpN; % PRZYBLIZENIE - POLICZ W DOMU
-Toz0 = TozN; % PRZYBLIZENIE - POLICZ W DOMU
+    Top0 = Tgp0;        % PRZYBLIZENIE 3
+Toz0 = Fmg0*Kco/(Kco*Fmg0 + Cpw*Fmg0*Fmg0 + Kco*Fmg0)*(Twz0 + (Cpw*Fmg0)*Top0/(Kco)); % JESLI JEST ZLE PRZYJMIN TozN
+Twp0 = (Cpw*Fmg0+Kco)*Toz0/Kco - (Cpw*Fmg0 + Kco)*Top0/Kco; % JEŚLI JEST ŹLE PRZYJMIJ TwpN
+
 
 %==================== SYMULACJE =======================%
 %symulacja
