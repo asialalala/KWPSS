@@ -26,10 +26,12 @@ Rog = 960;      % gęstość wody kg/m^3
 
 %-----------------------
 % identyfikacja parametrów statycznych
-FmgN = Vw/(4*60*60); % przyjmujemy, że całkowita wymiana powietrza w pokoju trwa 4h m^3/s
-Kcg = (Cpw*FmgN*(TgzN-TgpN))/(TgpN-TwewN); 
-Kcw = Kcg*(TgpN-TwewN)/(TwewN-TzewN); 
-Kco = (Cpw*FmgN*(TozN-TopN))/(TwpN-TozN);
+FmgN = QgN/(Cpw*(TgzN - TgpN));
+Kcg = QgN/(TgpN-TwewN);  % sprawdz czy to jest dobrze
+Kcw = QgN/(TwewN-TzewN);   % sprawdz czy to jest dobrze
+Kco = 2*QgN/(TwpN-TozN);
+FmwN = Kco*(TwpN - TozN)/(Cpw*(TwzN - TwpN));
+FmoN = Kco*(TwpN - TozN)/(Cpw*(TozN - TopN));
 
 %-----------------------
 % identyfikacja parametrów dynamicznych
@@ -57,8 +59,8 @@ Twz0 = TwzN + 0;    % 0 - nominalnie
 Twew0 = (Cpw*Fmg0*Kcg*Tgz0 + Kcw*(Kcg + Cpw*Fmg0)*Tzew0)/(Kcg*Kcw + Cpw*Fmg0*(Kcg + Kcw));
 Tgp0 = ((Kcg + Kcw)*Twew0 - Kcw*Tzew0)/(Kcg);
     Top0 = Tgp0;        % PRZYBLIZENIE 3
-Toz0 = Fmg0*Kco/(Kco*Fmg0 + Cpw*Fmg0*Fmg0 + Kco*Fmg0)*(Twz0 + (Cpw*Fmg0)*Top0/(Kco)); % JESLI JEST ZLE PRZYJMIN TozN
-Twp0 = (Cpw*Fmg0+Kco)*Toz0/Kco - (Cpw*Fmg0 + Kco)*Top0/Kco; % JEŚLI JEST ŹLE PRZYJMIJ TwpN
+Toz0 = TozN; % Fmg0*Kco/(Kco*Fmg0 + Cpw*Fmg0*Fmg0 + Kco*Fmg0)*(Twz0 + (Cpw*Fmg0)*Top0/(Kco)); % JESLI JEST ZLE PRZYJMIN TozN
+Twp0 = TwpN; % (Cpw*Fmg0+Kco)*Toz0/Kco - (Cpw*Fmg0 + Kco)*Top0/Kco; % JEŚLI JEST ŹLE PRZYJMIJ TwpN
 
 
 %==================== SYMULACJE =======================%
@@ -71,12 +73,23 @@ dFmg = 0;
 dTgz = 0;
 dTzew = 0;
 dQt = 0;
+% dTop = 0;
+dTwz = 0;
+dFmw = 0;
+% dFmo = 0;
 
 model='model_rownan';
 [t]=sim(model,tmax);    % t - wektor czasu
 %wykresy
 figure, plot(t, Twew, 'r'), grid on, title("Reakcja Twew");
 xlabel("t[s]"), ylabel("Twew[^{\circ}C]");
-figure, plot(t, Tgp, 'r'), grid on, title("Reakcja Tgp");
+
+figure, plot(t, Tgp1, 'r'), grid on, title("Reakcja Tgp1");
+xlabel("t[s]"), ylabel("Tgp1[^{\circ}C]");
+
+figure, plot(t, Twp, 'r'), grid on, title("Reakcja Twp");
+xlabel("t[s]"), ylabel("Tgp[^{\circ}C]");
+
+figure, plot(t, Toz, 'r'), grid on, title("Reakcja Toz");
 xlabel("t[s]"), ylabel("Tgp[^{\circ}C]");
 
