@@ -1,4 +1,4 @@
-close all, clear all
+close all
 
 %==================== IDENTYFIKACJA =======================%
 % wartości nominalne
@@ -59,6 +59,7 @@ Twz0 = TwzN + 0;    % 0 - nominalnie
 
 Fmg10 = Fmg0;
 Fmg20 = Fmg0;
+Fmw0 = FmwN;
 
 T0 = 10; % s opoznienie czasowe
 
@@ -68,7 +69,7 @@ Twew20 = (Cpw*Fmg20 *Kcg*Tgz20 + Kcw*(Kcg + Cpw*Fmg20)*Tzew0)/(Kcg*Kcw + Cpw*Fmg
 Tgp10 = ((Kcg + Kcw)*Twew10 - Kcw*Tzew0)/(Kcg);
 Tgp20 = ((Kcg + Kcw)*Twew20 - Kcw*Tzew0)/(Kcg);
 
-Top0 = TopN;        % PRZYBLIZENIE 3
+Top0 = TopN;  % PRZYBLIZENIE 3
 Toz0 = TozN; % Fmg0*Kco/(Kco*Fmg0 + Cpw*Fmg0*Fmg0 + Kco*Fmg0)*(Twz0 + (Cpw*Fmg0)*Top0/(Kco)); % JESLI JEST ZLE PRZYJMIN TozN
 Twp0 = TwpN; % (Cpw*Fmg0+Kco)*Toz0/Kco - (Cpw*Fmg0 + Kco)*Top0/Kco; % JEŚLI JEST ŹLE PRZYJMIJ TwpN
 
@@ -76,7 +77,7 @@ SumT0 = (Tgp10*Fmg10 + Tgp20*Fmg20)/(Fmg10 + Fmg20);
 
 %==================== SYMULACJE =======================%
 %symulacja
-tmax = 100000;  % czas symulacji
+tmax = 200000;  % czas symulacji
 
 %zaklocenia
 tsok = 2000; % czas skoku
@@ -84,7 +85,8 @@ dFmg = 0;
 dTzew = 0;
 dQt = 0;
 dTwz = 0;
-dFmw = 0.1*FmgN;
+dFmw = 0.0100000000000000;
+
 
 model='model_rownan';
 [t]=sim(model,tmax);    % t - wektor czasu
@@ -93,11 +95,11 @@ figure, plot(t, Twew1, 'r'), grid on, title("Reakcja Twew1 na skok Fmg o 10%");
 xlabel("t[s]"), ylabel("Twew1[^{\circ}C]");
 
 %==================== IDENTYFIKACJ =======================%
-k1 = (20.2553 - 20)/dFmw;
-Topu1 = 5820- tsok;
+k1 = (20.2553 - 20)/0.0100000000000000;
+Topu1 = 5820- 2000;
 Tczas1 = 25390-Topu1;
 
-k2 = (20.2553 - 20)/dFmw;
+k2 = (20.2553 - 20)/0.0100000000000000;
 Tczas2 = 21425-11955;
 Topu2 = 21425 - Tczas2;
 
@@ -107,18 +109,66 @@ xlabel("t[s]"), ylabel("Twew1[^{\circ}C]");
 hold on;
 modelPrzeg='identyfikacja';
 [t]=sim(modelPrzeg,tmax);    % t - wektor czasu
-%wykresy
+% wykresy
 plot(t, TwewId1, 'b');
 plot(t, TwewId2, 'g');
 legend('obiekt rzeczywisty','identyfikacja - pkt przegiecia','identyfikacja - metoda dwupkt');
 
 
-% figure, plot(t, Tgp1, 'r'), grid on, title("Reakcja Tgp1");
-% xlabel("t[s]"), ylabel("Tgp1[^{\circ}C]");
-% 
-% figure, plot(t, Twp, 'r'), grid on, title("Reakcja Twp");
-% xlabel("t[s]"), ylabel("Tgp[^{\circ}C]");
-% 
-% figure, plot(t, Toz, 'r'), grid on, title("Reakcja Toz");
-% xlabel("t[s]"), ylabel("Tgp[^{\circ}C]");
+%==================== STEROWANIE =======================%
+%%%%%%%%%%%%%%%%%%%%%%%%%%         nastawy z metody stycznej
+% wartosc zadana 
+dTwew = 1;
+
+% nastawy regulacji
+Kp = 0.9*Tczas1/(k1*Topu1);
+Ki = 1;
+Ti = 3.33*Topu1/Kp;
+
+%wykresy
+modelSt='sterowanie';
+[t]=sim(modelSt,tmax);    % t - wektor czasu
+figure, plot(t, TwewSt1, 'r'), grid on, title("Sterowanie Twew1 z wykorzystaniem nastaw z identyfikacji ze styczną");
+xlabel("t[s]"), ylabel("Twew1[^{\circ}C]");
+hold on;
+
+modelOb='obiekt_sterowanie';
+[t]=sim(modelOb,tmax);    % t - wektor czasu
+plot(t, Twew1, 'g');
+
+legend('model - pkt przegiecia', 'obiekt rzeczywisty');
+
+hold off;
+
+figure, plot(t, Twew1, 'g');
+grid on, title("Sterowanie Twew1 - porownanie na obiekcie");
+xlabel("t[s]"), ylabel("Twew1[^{\circ}C]");
+hold on;
+%%%%%%%%%%%%%%%%%%%%%%%%%%        nastawy z metody dwupunktowa
+% nastawy regulacji
+Kp = 0.9*Tczas2/(k2*Topu2);
+Ki = 1;
+Ti = 3.33*Topu2/Kp;
+
+%wykresy
+
+modelOb='obiekt_sterowanie';
+[t]=sim(modelOb,tmax);    % t - wektor czasu
+plot(t, Twew1, 'b');
+legend('model - metoda styczna','model - metoda dwupkt');
+hold off;
+
+figure,plot(t, Twew1, 'b');
+hold on;
+modelSt='sterowanie';
+[t]=sim(modelSt,tmax);    % t - wektor czasu
+plot(t, TwewSt2, 'k') , grid on, title("Sterowanie Twew1 z wykorzystaniem nastaw z identyfikacji dwupunktowej");
+xlabel("t[s]"), ylabel("Twew1[^{\circ}C]");
+
+legend('obiekt rzeczywisty', 'model - metoda dwupkt');
+
+
+
+
+
 
