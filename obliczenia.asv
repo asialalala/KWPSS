@@ -143,6 +143,8 @@ legend('skok dTzew','skok dTwz', 'skok dTwz');
 xlabel("t[s]"), ylabel("Top[^{\circ}C]");
 
 
+T0 = 0; % s opoznienie czasowe
+
 
 
 %==================== IDENTYFIKACJ =======================%
