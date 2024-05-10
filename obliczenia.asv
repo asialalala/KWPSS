@@ -77,7 +77,7 @@ SumT0 = (Tgp10*Fmg10 + Tgp20*Fmg20)/(Fmg10 + Fmg20);
 
 %==================== SYMULACJE =======================%
 %symulacja
-tmax = 70000;  % czas symulacji
+tmax = 10000;  % czas symulacji
 
 %zaklocenia
 tsok = 2000; % czas skoku
@@ -197,14 +197,11 @@ hold off;
 % xlabel("t[s]"), ylabel("Toz[^{\circ}C]");
 
 % STEROWANIE NA OBIEKCIE
-modelOb='regulacjapogodowaobiekt';
-[t]=sim(modelOb,tmax);    % t - wektor czasu
+modelOb='regulacja_pogodowa_model';
 figure(2);
-plot(t, Twew1, 'g');
-hold on;
-plot(t, Twew2, 'b')
-legend("Twew1", "Twew2")
-xlabel("t[s]"), ylabel("Twew[^{\circ}C]");
+% % plot(t, Cv, 'g');
+% legend("Toz")
+% xlabel("t[s]"), ylabel("Toz[^{\circ}C]");
 
 % Tzewnętrzene znamy 
 % Twewnetrzen to wartość zadana, też nzamy
