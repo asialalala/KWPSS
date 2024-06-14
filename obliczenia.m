@@ -124,17 +124,47 @@ Ki = 1;
 Ti = 3.33*Topu1/Kp;
 
 
+% DWA STEROWANIA LOKALNE --------------------------------------
+
 f1 = figure(1);
-modelOb = "regulacjapogodowaobiekt";
+modelOb = "dwa_lokalne";
 [t]=sim(modelOb,tmax);    % t - wektor czasu
 plot(t, Twew1, 'k');
 hold on;
 plot(t, Twew2, 'b--');
-title("Sterowanie Twew");
+title("Sterowanie Twew1 i Twew2 dla dwuch regulatorów lokalnych");
 xlabel("t[s]");
 ylabel("T^{\circ}C]");
 legend("Twew1", "Twew2");
 
+
+% STEROWANIE CENTRALNE ---------------------------------------
+
+% regulacja pogodowa cieplowania
+az_wz = (TwzN - TzewN)/(TwewN - TzewN);
+bz_wz = (TwzN - TwewN)/(TwewN - TzewN);
+ap_wz = (TwpN - TzewN)/(TwewN - TzewN);
+bp_wz = (TwpN - TwewN)/(TwewN - TzewN);
+
+% regulacja pogodowa wezel
+az_gz = (TgzN - TzewN)/(TwewN - TzewN);
+bz_gz = (TgzN - TwewN)/(TwewN - TzewN);
+ap_gz = (TgpN - TzewN)/(TwewN - TzewN);
+bp_gz = (TgpN - TwewN)/(TwewN - TzewN);
+
+
+TemVec = [-20,20];
+
+f2 = figure(2);
+modelOb = "regulacja_pogodowa_model";
+[t]=sim(modelOb,tmax);    % t - wektor czasu
+plot(TemVec, TgzOut, 'k');
+hold on;
+plot(TemVec, TgpOut, 'b--');
+title("Krzywe pogodowe dla grzejnika");
+xlabel("Twew^{\circ}C]");
+ylabel("T^{\circ}C]");
+legend("Tgz", "Tgp");
 
 % Po wprowadzenieu sterowania lokalnego
 % rozszerzenie o zamodelowanie hydrauyliki
