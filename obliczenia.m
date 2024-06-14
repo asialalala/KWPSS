@@ -82,8 +82,8 @@ tmax = 180000;  % czas symulacji
 
 %zaklocenia
 tsok = 2000; % czas skoku
-dFmg1 = 0.05*Fmg10;
-dFmg2 = 0;%0.05*Fmg20;
+dFmg1 = 0; %0.05*Fmg10;
+dFmg2 = 0; %0.05*Fmg20;
 dTzew = 0;
 dQt1 = 0;
 dQt2 = 0;
@@ -101,38 +101,39 @@ Topu1 = 3080 - tsok;
 Tczas1 = 15543 - Topu1 - tsok;
 
 
-f1 = figure(1);
-modelOb = "regulacjapogodowaobiekt";
-[t]=sim(modelOb,tmax);    % t - wektor czasu
-plot(t, Twew1, 'k');
-hold on;
-modelOb = "model_loklany";
-[t]=sim(modelOb,tmax);    % t - wektor czasu
-plot(t, TwewModel, 'b');
-title("Identyfikacja");
-xlabel("t[s]");
-ylabel("Twew[^{\circ}C]");
-legend("Twew", "TweweModel");
+% weryfikacja, aby działała, trzeba usunąć regilatory lokalne
+% f1 = figure(1);
+% modelOb = "regulacjapogodowaobiekt";
+% [t]=sim(modelOb,tmax);    % t - wektor czasu
+% plot(t, Twew2, 'k');
+% hold on;
+% modelOb = "model_loklany";
+% [t]=sim(modelOb,tmax);    % t - wektor czasu
+% plot(t, TwewModel2, 'b');
+% title("Identyfikacja");
+% xlabel("t[s]");
+% ylabel("Twew[^{\circ}C]");
+% legend("Twew", "TweweModel2");
 
 
 %==================== STEROWANIE =======================%
 
 % nastawy
-% Kp = 0.9*Tczas1/(k1*Topu1);
-% Ki = 1;
-% Ti = 3.33*Topu1/Kp;
+Kp = 0.9*Tczas1/(k1*Topu1);
+Ki = 1;
+Ti = 3.33*Topu1/Kp;
 
 
-% f1 = figure(1);
-% modelOb = "regulacjapogodowaobiekt";
-% [t]=sim(modelOb,tmax);    % t - wektor czasu
-% plot(t, Twew1, 'k');
-% hold on;
-% plot(t, Twew2, 'b');
-% title("Sterowanie Twew");
-% xlabel("t[s]");
-% ylabel("T^{\circ}C]");
-% legend("Twew1", "Twew2");
+f1 = figure(1);
+modelOb = "regulacjapogodowaobiekt";
+[t]=sim(modelOb,tmax);    % t - wektor czasu
+plot(t, Twew1, 'k');
+hold on;
+plot(t, Twew2, 'b--');
+title("Sterowanie Twew");
+xlabel("t[s]");
+ylabel("T^{\circ}C]");
+legend("Twew1", "Twew2");
 
 
 % Po wprowadzenieu sterowania lokalnego
