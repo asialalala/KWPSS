@@ -189,6 +189,13 @@ TczasC = 8022;
 % ylabel("Toz[^{\circ}C]");
 % legend("Toz", "TozModel");
 
+%==================== STEROWANIE CENTRALNE =======================%
+
+
+% nastawy
+Kp = 0.9*TczasC/(kC*TopuC);
+Ki = 1;
+Ti = 3.33*TopuC/Kp;
 
 f4 = figure(4);
 modelOb = "centralne";
@@ -197,6 +204,47 @@ plot(t, Twew1, 'k');
 hold on;
 plot(t, Twew2, 'b--');
 title("Sterowanie Twew1 i Twew2 dla regulatora centralnego");
+xlabel("t[s]");
+ylabel("T^{\circ}C]");
+legend("Twew1", "Twew2");
+
+
+%==================== IDENTYFIKACJA  CENTRALNIE Z LOKALNYM =======================%
+
+% model
+kLC= 1.5492/0.0200;
+TopuLC = 2716 - tsok;
+TczasLC = 12254 - Topu1 - tsok;
+
+% weryfikacja
+% f5 = figure(5);
+% modelOb = "lokalny_i_centralny";
+% [t]=sim(modelOb,tmax);    % t - wektor czasu
+% plot(t, Toz, 'k');
+% hold on;
+% modelOb = "regulacja_pogodowa_model";
+% [t]=sim(modelOb,tmax);    % t - wektor czasu
+% plot(t, TozRp, 'b');
+% title("Weryfikacja");
+% xlabel("t[s]");
+% ylabel("Toz[^{\circ}C]");
+% legend("Toz", "TozModel");
+
+
+%==================== STEROWANIE  CENTRALNIE Z LOKALNYM  =======================%
+
+% nastawy
+Kp = 0.9*TczasC/(kLC*TopuLC);
+Ki = 1;
+Ti = 3.33*TopuLC/Kp;
+
+f6 = figure(6);
+modelOb = "lokalny_i_centralny";
+[t]=sim(modelOb,tmax);    % t - wektor czasu
+plot(t, Twew1, 'k');
+hold on;
+plot(t, Twew2, 'b--');
+title("Sterowanie Twew1 i Twew2 dla regulatora centralnego i lokalnego");
 xlabel("t[s]");
 ylabel("T^{\circ}C]");
 legend("Twew1", "Twew2");
