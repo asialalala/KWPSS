@@ -88,7 +88,7 @@ dTzew = 0;
 dQt1 = 0;
 dQt2 = 0;
 dTwz = 0;
-dFmw = 0.1*FmwN;
+dFmw = 0; %0.1*FmwN;
 
 dTwew1 = 0;
 dTwew2 = 0;
@@ -156,7 +156,7 @@ bz_gz = (TgzN - TwewN)/(TwewN - TzewN);
 ap_gz = (TgpN - TzewN)/(TwewN - TzewN);
 bp_gz = (TgpN - TwewN)/(TwewN - TzewN);
 
-TopuCiep = 2000;
+
 TemVec = [-20,20];
 
 % krzywe pogodowe
@@ -171,23 +171,9 @@ TemVec = [-20,20];
 % ylabel("T^{\circ}C]");
 % legend("Tgz", "Tgp");
 
-% ze sprawozdania
-kC= 67.44;
-TopuC = 648;
-TczasC = 8022;
-
-f3 = figure(3);
-modelOb = "centralne";
-[t]=sim(modelOb,tmax);    % t - wektor czasu
-plot(t, Toz, 'k');
-hold on;
-modelOb = "regulacja_pogodowa_model";
-[t]=sim(modelOb,tmax);    % t - wektor czasu
-plot(t, TozRp, 'b');
-title("Identyfikacja");
-xlabel("t[s]");
-ylabel("Toz[^{\circ}C]");
-legend("Toz", "TozModel");
+k1C= (0.329)/0.0050;
+TopuC = 3080 - tsok;
+TczasC = 15543 - Topu1 - tsok;
 
 % Po wprowadzenieu sterowania lokalnego
 % rozszerzenie o zamodelowanie hydrauyliki
