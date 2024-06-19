@@ -90,7 +90,7 @@ dQt2 = 0;
 dTwz = 0;
 dFmw = 0; %0.1*FmwN;
 
-dTwew1 = 1;
+dTwew1 = 0;
 dTwew2 = 0;
 
 %==================== IDENTYFIKACJA  LOKALNIE =======================%
@@ -233,10 +233,14 @@ TczasLC = 12254 - Topu1 - tsok;
 
 %==================== STEROWANIE  CENTRALNIE Z LOKALNYM  =======================%
 
-% nastawy
-Kp = 0.9*TczasC/(kLC*TopuLC);
-Ki = 1;
-Ti = 3.33*TopuLC/Kp;
+% nastawy dla reg. centr.
+KpC = 0.9*TczasC/(kLC*TopuLC);
+KiC = 1;
+TiC = 3.33*TopuLC/KpC;
+% nastawy dla reg. lok.
+KpL = 0.9*Tczas1/(k1*Topu1);
+KiL = 1;
+TiL = 3.33*Topu1/KpL;
 
 f6 = figure(6);
 modelOb = "lokalny_i_centralny";
