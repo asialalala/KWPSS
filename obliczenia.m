@@ -88,9 +88,9 @@ dTzew = 0;
 dQt1 = 0;
 dQt2 = 0;
 dTwz = 0;
-dFmw = 0.1*FmwN;
+dFmw = 0; %0.1*FmwN;
 
-dTwew1 = 0;
+dTwew1 = 1;
 dTwew2 = 0;
 
 %==================== IDENTYFIKACJA  LOKALNIE =======================%
@@ -176,18 +176,31 @@ kC= 67.44;
 TopuC = 648;
 TczasC = 8022;
 
-f3 = figure(3);
+% f3 = figure(3);
+% modelOb = "centralne";
+% [t]=sim(modelOb,tmax);    % t - wektor czasu
+% plot(t, Toz, 'k');
+% hold on;
+% modelOb = "regulacja_pogodowa_model";
+% [t]=sim(modelOb,tmax);    % t - wektor czasu
+% plot(t, TozRp, 'b');
+% title("Identyfikacja");
+% xlabel("t[s]");
+% ylabel("Toz[^{\circ}C]");
+% legend("Toz", "TozModel");
+
+
+f4 = figure(4);
 modelOb = "centralne";
 [t]=sim(modelOb,tmax);    % t - wektor czasu
-plot(t, Toz, 'k');
+plot(t, Twew1, 'k');
 hold on;
-modelOb = "regulacja_pogodowa_model";
-[t]=sim(modelOb,tmax);    % t - wektor czasu
-plot(t, TozRp, 'b');
-title("Identyfikacja");
+plot(t, Twew2, 'b--');
+title("Sterowanie Twew1 i Twew2 dla regulatora centralnego");
 xlabel("t[s]");
-ylabel("Toz[^{\circ}C]");
-legend("Toz", "TozModel");
+ylabel("T^{\circ}C]");
+legend("Twew1", "Twew2");
+
 
 % Po wprowadzenieu sterowania lokalnego
 % rozszerzenie o zamodelowanie hydrauyliki
