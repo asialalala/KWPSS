@@ -88,10 +88,11 @@ dTzew = 0;
 dQt1 = 0;
 dQt2 = 0;
 dTwz = 0;
-dFmw = 0; %0.1*FmwN;
+dFmw = 0;
 
-dTwew1 = 1;
+dTwew1 = 0;
 dTwew2 = 0;
+dTwewWsp = 0;
 
 %==================== IDENTYFIKACJA  LOKALNIE =======================%
 
@@ -117,12 +118,6 @@ Tczas1 = 15543 - Topu1 - tsok;
 
 
 %==================== STEROWANIE LOKALNIE =======================%
-
-% nastawy
-Kp = 0.9*Tczas1/(k1*Topu1);
-Ki = 1;
-Ti = 3.33*Topu1/Kp;
-
 
 % DWA STEROWANIA LOKALNE --------------------------------------
 
@@ -239,18 +234,15 @@ TczasLC = 12254 - Topu1 - tsok;
 %==================== STEROWANIE  CENTRALNIE Z LOKALNYM  =======================%
 
 % nastawy dla reg. centr.
-KpC_ = 0.9*TczasC/(kLC*TopuLC);
-KiC_ = 1;
-TiC_ = 3.33*TopuLC/KpC_;
+KpCC = 0.9*TczasLC/(kLC*TopuLC);
+KiCC = 1;
+TiCC = 3.33*TopuLC/KpCC;
 % nastawy dla reg. lok.
-KpL = 0.9*Tczas1/(k1*Topu1);
-KiL = 1;
-TiL = 3.33*Topu1/KpL;
+KpLL = 0.9*Tczas1/(k1*Topu1);
+KiLL = 1;
+TiLL = 3.33*Topu1/KpLL;
 
 
-KpC = KpC_;
-KiC = KiC_;
-TiC = TiC_;
 % 
 % f6 = figure(6);
 % modelOb = "lokalny_i_centralny";
@@ -267,14 +259,76 @@ TiC = TiC_;
 % Po wprowadzenieu sterowania lokalnego
 % rozszerzenie o zamodelowanie hydrauyliki
 
+% ------- model hydrauliki
+Rg = 90000;
+Rw = 5000;
+P0 = 10000;
+R210 = 0;
+R220 = 0;
+
+dP = 0;
+dR21 = 10;
+dR22 = 0;
 
 
-% ======================================  STEROWANIE RAZEM
+kh = -(20- 19.4948)/9000;
+Topuh = 3224 - tsok;
+Tczash = 14878 - Topuh - tsok;
 
-% nastawy dla lokalnego
-KpL = 0.9*Tczas1/(k1*Topu1);
+% modelOb = "hydraulika_lokalny_i_centralny";
+% [t]=sim(modelOb,tmax);    % t - wektor czasu
+% plot(t, Twew1, 'g');
+% hold on;
+% modelOb = "model_hydrau";
+% [t]=sim(modelOb,tmax);    % t - wektor czasu
+% plot(t, TwewH, 'b--');
+% xlabel('t[s]');
+% ylabel('T^{\circ}C]');
+% legend('obiekt', 'model');
+
+% nastawy dla reg. lok.
+KpL = 0.9*Tczash/(kh*Topuh);
 KiL = 1;
-TiL = 3.33*Topu1/KpL;
+TiL = 3.33*Topuh/KpL;
+
+%  modelOb = "hydraulika_lokalny_i_centralny";
+% [t]=sim(modelOb,tmax);    % t - wektor czasu
+% plot(t, Twew1, 'g');
+
+khC = (91.8012 -90)/0.02;
+TopuhC = 2740 - tsok;
+TczashC = 12982 - Topuh - tsok;
+
+
+% KpC_ = 0.9*TczashC/(khC*TopuhC);
+% KiC_ = 1;
+% TiC_ = 3.33*TopuhC/KpC_;
+
+% modelOb = "hydraulika_lokalny_i_centralny";
+% [t]=sim(modelOb,tmax);    % t - wektor czasu
+% plot(t, Toz, 'g');
+% hold on;
+% modelOb = "model_hydrau";
+% [t]=sim(modelOb,tmax);    % t - wektor czasu
+% plot(t, TH, 'b--');
+% xlabel('t[s]');
+% ylabel('Toz^{\circ}C]');
+% legend('obiekt', 'model');
+
+
+% % ======================================  STEROWANIE RAZEM
+% 
+
+% nastawy cenralny niezal
+Kp = 0.9*TczasC/(kC*TopuC);
+Ki = 1;
+Ti = 3.33*TopuC/Kp;
+
+% nastawy centralny zal
+KpC_ = 0.9*TczashC/(khC*TopuhC);
+KiC_ = 1;
+TiC_ = 3.33*TopuhC/KpC_;
+
 
 % ============== niezalezne =============
 % nastawy dla centralnego
@@ -282,123 +336,27 @@ KpC = Kp;
 KiC = Ki;
 TiC = Ti;
 
-f7 = figure(7);
-modelOb = "centralne";
-[t]=sim(modelOb,tmax);    % t - wektor czasu
-plot(t, Twew1, 'm-');
-hold on;
-plot(t, Twew2, 'c--');
+% f9 = figure(79);
+% modelOb = "hydraulika_lokalny_i_centralny";
+% [t]=sim(modelOb,tmax);    % t - wektor czasu
+% plot(t, Twew1, 'g');
+% hold on;
+% plot(t, Twew2, 'b--');
 
-f8 = figure(8);
-plot(t, CvC, 'm-');
-hold on;
-
-f7 = figure(7);
-modelOb = "lokalny_i_centralny";
-[t]=sim(modelOb,tmax);    % t - wektor czasu
-plot(t, Twew1, 'b--');
-hold on;
-plot(t, Twew2, 'g--');
-
-f8 = figure(8);
-plot(t, CvC, 'b-');
-hold on;
-plot(t, CvL1, 'g--');
-hold on;
-
-
-f7 = figure(7);
-modelOb = "lokalne_i_centralny";
-[t]=sim(modelOb,tmax);    % t - wektor czasu
-plot(t, Twew1, 'k--');
-hold on;
-plot(t, Twew2, 'Color', orange, 'LineStyle', '--');
-
-f8 = figure(8);
-plot(t, CvC, 'k--');
-hold on;
-plot(t, CvL1, 'Color', orange, 'LineStyle', '--');
-hold on;
-plot(t, CvL2, 'r--');
-hold on;
-
-f7 = figure(7);
-title("Sterowanie Twew1 i Twew2 dla regulatora PV");
-xlabel("t[s]");
-ylabel("T^{\circ}C]");
-legend("Twew1 C", "Twew2 C", "Twew1 L1C", "Twew2 L1C", "Twew1 L2C", "Twew2 L2C");
-
-f8 = figure(8);
-title("Sterowanie Twew1 i Twew2 dla regulatora CV");
-xlabel("t[s]");
-ylabel("T^{\circ}C]");
-legend("CvC C", "CvC L1C", "CvL1 L1C", "CvC L2C", "CvL1 L2C", "CvL2 L2C");
-
-
-
-% ======================= zalezne
-
-
-% nastawy dla lokalnego
-KpL = 0.9*Tczas1/(k1*Topu1);
-KiL = 1;
-TiL = 3.33*Topu1/KpL;
-
-% nastawy dla centralnego
+%============= zalezne
 KpC = KpC_;
 KiC = KiC_;
 TiC = TiC_;
 
-f9 = figure(9);
-modelOb = "centralne";
+f9 = figure(79);
+modelOb = "hydraulika_lokalny_i_centralny";
 [t]=sim(modelOb,tmax);    % t - wektor czasu
-plot(t, Twew1, 'm-');
+plot(t, Twew1, 'm--');
 hold on;
-plot(t, Twew2, 'c--');
+% plot(t, Twew2, 'r:');
 
-f10 = figure(10);
-plot(t, CvC, 'm-');
-hold on;
-
-f9 = figure(9);
-modelOb = "lokalny_i_centralny";
-[t]=sim(modelOb,tmax);    % t - wektor czasu
-plot(t, Twew1, 'b--');
-hold on;
-plot(t, Twew2, 'g--');
-
-f10 = figure(10);
-plot(t, CvC, 'b-');
-hold on;
-plot(t, CvL1, 'g--');
-hold on;
-
-
-f9 = figure(9);
-modelOb = "lokalne_i_centralny";
-[t]=sim(modelOb,tmax);    % t - wektor czasu
-plot(t, Twew1, 'k--');
-hold on;
-plot(t, Twew2, 'Color', orange, 'LineStyle', '--');
-
-f10 = figure(10);
-plot(t, CvC, 'k--');
-hold on;
-plot(t, CvL1, 'Color', orange, 'LineStyle', '--');
-hold on;
-plot(t, CvL2, 'r--');
-hold on;
-
-f9 = figure(9);
-title("Sterowanie Twew1 i Twew2 dla regulatora PV");
-xlabel("t[s]");
-ylabel("T^{\circ}C]");
-legend("Twew1 C", "Twew2 C", "Twew1 L1C", "Twew2 L1C", "Twew1 L2C", "Twew2 L2C");
-
-f10 = figure(10);
-title("Sterowanie Twew1 i Twew2 dla regulatora CV");
-xlabel("t[s]");
-ylabel("T^{\circ}C]");
-legend("CvC C", "CvC L1C", "CvL1 L1C", "CvC L2C", "CvL1 L2C", "CvL2 L2C");
-
-
+title("identyfikacja ")
+% title("Sterowanie Twew1 i Twew2 dla regulatora centralnego i lokalnego PV");
+% xlabel("t[s]");
+% ylabel("T^{\circ}C]");
+% legend("Twew1 L1C niezalezne", "Twew2 L1C niezalezne", "Twew1 L1C zalezne", "Twew2 L1C zalezne");

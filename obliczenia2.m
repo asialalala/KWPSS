@@ -1,5 +1,5 @@
 close all
-
+orange = [0.85, 0.33, 0.1];
 %==================== IDENTYFIKACJA =======================%
 % wartości nominalne
 TwewN = 20;     %oC
@@ -81,7 +81,7 @@ tmax = 180000;  % czas symulacji
 
 
 %zaklocenia
-tsok = 2000; % czas skoku
+tsok = 80000; % czas skoku
 dFmg1 = 0; %0.05*Fmg10;
 dFmg2 = 0; %0.05*Fmg20;
 dTzew = 0;
@@ -92,13 +92,14 @@ dFmw = 0; %0.1*FmwN;
 
 dTwew1 = 0;
 dTwew2 = 0;
+dTwewWsp = -1;
 
 %==================== IDENTYFIKACJA  LOKALNIE =======================%
 
 
 k1= (0.329)/0.0050;
-Topu1 = 3080 - tsok;
-Tczas1 = 15543 - Topu1 - tsok;
+Topu1 = 3080 - 2000;
+Tczas1 = 15543 - Topu1 - 2000;
 
 
 % weryfikacja, aby działała, trzeba usunąć regilatory lokalne
@@ -126,23 +127,25 @@ Ti = 3.33*Topu1/Kp;
 
 % DWA STEROWANIA LOKALNE --------------------------------------
 
-f1 = figure(1);
-modelOb = "dwa_lokalne";
-[t]=sim(modelOb,tmax);    % t - wektor czasu
-plot(t, Twew1, 'k');
-hold on;
-plot(t, Twew2, 'b--');
-title("Sterowanie Twew1 i Twew2 dla dwuch regulatorów lokalnych");
-xlabel("t[s]");
-ylabel("T^{\circ}C]");
-legend("Twew1", "Twew2");
+% f1 = figure(1);
+% modelOb = "dwa_lokalne";
+% [t]=sim(modelOb,tmax);    % t - wektor czasu
+% plot(t, Twew1, 'k');
+% hold on;
+% plot(t, Twew2, 'b--');
+% title("Sterowanie Twew1 i Twew2 dla dwuch regulatorów lokalnych");
+% xlabel("t[s]");
+% ylabel("T^{\circ}C]");
+% legend("Twew1", "Twew2");
 
 
 
+%==================== STEROWANIE  CENTRALNIE Z LOKALNYM  =======================%
 
-%==================== IDENTYFIKACJA  CENTRALNIE =======================%
-
-% STEROWANIE CENTRALNE ---------------------------------------
+% ze sprawozdania
+kC= 67.44;
+TopuC = 648;
+TczasC = 8022;
 
 % regulacja pogodowa cieplowania
 az_wz = (TwzN - TzewN)/(TwewN - TzewN);
@@ -159,166 +162,80 @@ bp_gz = (TgpN - TwewN)/(TwewN - TzewN);
 TopuCiep = 2000;
 TemVec = [-20,20];
 
-% krzywe pogodowe
-% f2 = figure(2);
-% modelOb = "regulacja_pogodowa_model";
-% [t]=sim(modelOb,tmax);    % t - wektor czasu
-% plot(TemVec, TgzOut, 'k');
-% hold on;
-% plot(TemVec, TgpOut, 'b--');
-% title("Krzywe pogodowe dla grzejnika");
-% xlabel("Twew^{\circ}C]");
-% ylabel("T^{\circ}C]");
-% legend("Tgz", "Tgp");
-
-% ze sprawozdania
-kC= 67.44;
-TopuC = 648;
-TczasC = 8022;
-
-% f3 = figure(3);
-% modelOb = "centralne";
-% [t]=sim(modelOb,tmax);    % t - wektor czasu
-% plot(t, Toz, 'k');
-% hold on;
-% modelOb = "regulacja_pogodowa_model";
-% [t]=sim(modelOb,tmax);    % t - wektor czasu
-% plot(t, TozRp, 'b');
-% title("Identyfikacja");
-% xlabel("t[s]");
-% ylabel("Toz[^{\circ}C]");
-% legend("Toz", "TozModel");
-
-%==================== STEROWANIE CENTRALNE =======================%
-
-
-% nastawy
-Kp = 0.9*TczasC/(kC*TopuC);
-Ki = 1;
-Ti = 3.33*TopuC/Kp;
-
-KpC = Kp;
-KiC = Ki;
-TiC = Ti;
-
-
-f4 = figure(4);
-modelOb = "centralne";
-[t]=sim(modelOb,tmax);    % t - wektor czasu
-plot(t, Twew1, 'k');
-hold on;
-plot(t, Twew2, 'b--');
-title("Sterowanie Twew1 i Twew2 dla regulatora centralnego");
-xlabel("t[s]");
-ylabel("T^{\circ}C]");
-legend("Twew1", "Twew2");
-
-
-%==================== IDENTYFIKACJA  CENTRALNIE Z LOKALNYM =======================%
-
-% model
-kLC= 1.5492/0.0200;
-TopuLC = 2716 - tsok;
-TczasLC = 12254 - Topu1 - tsok;
-
-% weryfikacja
-% f5 = figure(5);
-% modelOb = "lokalny_i_centralny";
-% [t]=sim(modelOb,tmax);    % t - wektor czasu
-% plot(t, Toz, 'k');
-% hold on;
-% modelOb = "regulacja_pogodowa_model";
-% [t]=sim(modelOb,tmax);    % t - wektor czasu
-% plot(t, TozRp, 'b');
-% title("Weryfikacja");
-% xlabel("t[s]");
-% ylabel("Toz[^{\circ}C]");
-% legend("Toz", "TozModel");
-
-
-%==================== STEROWANIE  CENTRALNIE Z LOKALNYM  =======================%
-
-% nastawy dla reg. centr.
-KpC_ = 0.9*TczasC/(kLC*TopuLC);
-KiC_ = 1;
-TiC_ = 3.33*TopuLC/KpC_;
-% nastawy dla reg. lok.
-KpL = 0.9*Tczas1/(k1*Topu1);
-KiL = 1;
-TiL = 3.33*Topu1/KpL;
-
-
-KpC = KpC_;
-KiC = KiC_;
-TiC = TiC_;
-
-f6 = figure(6);
-modelOb = "lokalny_i_centralny";
-[t]=sim(modelOb,tmax);    % t - wektor czasu
-plot(t, Twew1, 'k');
-hold on;
-plot(t, Twew2, 'b--');
-title("Sterowanie Twew1 i Twew2 dla regulatora centralnego i lokalnego");
-xlabel("t[s]");
-ylabel("T^{\circ}C]");
-legend("Twew1", "Twew2");
-
-
-% Po wprowadzenieu sterowania lokalnego
-% rozszerzenie o zamodelowanie hydrauyliki
-
-
-
-% STEROWANIE RAZEM
+% ======================================  STEROWANIE RAZEM
 
 % nastawy dla lokalnego
-KpL = 0.9*Tczas1/(k1*Topu1);
-KiL = 1;
-TiL = 3.33*Topu1/KpL;
+KpC = 0.9*TczasC/(kC*TopuC);
+KiC = 1;
+TiC = 3.33*TopuC/Kp;
 
-% ============== niezalezne =============
-% nastawy dla centralnego
-KpC = Kp;
-KiC = Ki;
-TiC = Ti;
-
-f7 = figure(7);
+f19 = figure(19);
 modelOb = "centralne";
 [t]=sim(modelOb,tmax);    % t - wektor czasu
-plot(t, Twew1, 'm');
+plot(t, Twew1, 'g--');
+hold on;
+plot(t, Twew2, 'b--');
+
+f21 = figure(21);
+plot(t, CvC, 'g--');
+hold on;
+
+f19 = figure(19);
+Kp = TczasC/(kC*TopuC);
+Ki = 0;
+Ti = 3.33*TopuC/Kp; % obojetnie jaka wartosc
+
+modelOb = "centralneP";
+[t]=sim(modelOb,tmax);    % t - wektor czasu
+plot(t, Twew1, 'm--');
 hold on;
 plot(t, Twew2, 'r--');
+f21 = figure(21);
+plot(t, CvC, 'm--');
 
-f8 = figure(8);
-plot(t, CvC, 'm');
-hold on;
-
-f7 = figure(7);
-modelOb = "lokalny_i_centralny";
+f19 = figure(19);
+Kp = Tczas1/(k1*Topu1)*6;
+Ki = 0;
+modelOb = "centralneP";
 [t]=sim(modelOb,tmax);    % t - wektor czasu
-plot(t, Twew1, 'b');
+plot(t, Twew1, 'k--');
 hold on;
-plot(t, Twew2, 'g--');
-
-f8 = figure(8);
-plot(t, CvC, 'b');
-hold on;
-
-f7 = figure(7);
-modelOb = "lokalne_i_centralny";
-[t]=sim(modelOb,tmax);    % t - wektor czasu
-plot(t, Twew1, 'k');
-hold on;
-plot(t, Twew2, 'y--');
+plot(t, Twew2, 'c--');
 
 
-f7 = figure(7);
-title("Sterowanie Twew1 i Twew2 dla regulatora");
+title("Sterowanie Twew1 i Twew2 PV");
 xlabel("t[s]");
 ylabel("T^{\circ}C]");
-legend("Twew1 C", "Twew2 C", "Twew1 L1C", "Twew2 L1C", "Twew1 L2C", "Twew2 L2C");
+legend("Twew1  PI", "Twew2  PI", "Twew1  P", "Twew2  P", "Twew1  P popraw", "Twew2  P popraw");
+
+f21 = figure(21);
+plot(t, CvC, 'k--');
+xlabel("t[s]");
+ylabel("f m^3/s");
+legend("cv PI", "cv P", "cv P poraw");
+
+Emin = -0.5;
+Emax = 0.5;
+Fmin = 0;
+Fmax = FmwN;
+
+f20 = figure(20);
+modelOb = "centralne_dwustawny";
+[t]=sim(modelOb,tmax);    % t - wektor czasu
+plot(t, Twew1, 'g--');
+hold on;
+plot(t, Twew2, 'b--');
+title("Sterowanie Twew1 i Twew2 PV");
+xlabel("t[s]");
+ylabel("T^{\circ}C]");
+legend("Twew1 2 dwustawne", "Twew2 2 dwustawne");
+
+f21 = figure(22);
+plot(t, CvC, 'k');
+xlabel("t[s]");
+ylabel("f m^3/s");
+legend("cv ");
 
 
-% ======================= zalezne
 
 
